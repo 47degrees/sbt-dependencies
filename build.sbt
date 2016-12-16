@@ -2,7 +2,7 @@ import de.heikoseeberger.sbtheader.license.Apache2_0
 import catext.Dependencies._
 
 val dev  = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
-val gh   = GitHubSettings("com.fortysevendeg", "github4s", "47 Degrees", apache)
+val gh   = GitHubSettings("com.fortysevendeg", "sbt-dependencies", "47 Degrees", apache)
 val vAll = Versions(versions, libraries, scalacPlugins)
 
 lazy val artifactSettings = Seq(
@@ -21,9 +21,8 @@ lazy val pluginSettings = Seq(
       "jgit-repo" at "http://download.eclipse.org/jgit/maven"
     ),
     libraryDependencies ++= Seq(
-      "com.lihaoyi"   %% "scalatags" % "0.6.0",
-      "org.scalactic" %% "scalactic" % "3.0.0",
-      "org.scalatest"  %% "scalatest"  % versions("scalatest")  % "test",
+      "org.scalactic"  %% "scalactic"  % "3.0.0",
+      "org.scalatest"  %% "scalatest"  % versions("scalatest") % "test",
       "org.scalacheck" %% "scalacheck" % versions("scalacheck") % "test"
     ),
     scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
