@@ -1,0 +1,3 @@
+package dependencies
+
+trait DependenciesKeys {}
