@@ -1,12 +1,24 @@
+import de.heikoseeberger.sbtheader.license.Apache2_0
 import catext.Dependencies._
 
+val dev  = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
+val gh   = GitHubSettings("com.fortysevendeg", "sbt-dependencies", "47 Degrees", apache)
+val vAll = Versions(versions, libraries, scalacPlugins)
+
 lazy val artifactSettings = Seq(
-  name := "sbt-dependencies",
-  organization := "com.fortysevendeg",
-  organizationName := "47 Degrees",
+  name := gh.proj,
+  organization := gh.org,
+  organizationName := gh.publishOrg,
   homepage := Option(url("http://www.47deg.com")),
-  organizationHomepage := Some(new URL("http://47deg.com"))
+  organizationHomepage := Some(new URL("http://47deg.com")),
+  headers := Map(
+    "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
+  )
 )
+
+pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray)
+pgpPublicRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/pubring.gpg")
+pgpSecretRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/secring.gpg")
 
 lazy val pluginSettings = Seq(
     sbtPlugin := true,
@@ -24,54 +36,15 @@ lazy val pluginSettings = Seq(
     scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
   ) ++ reformatOnCompileSettings
 
-lazy val gitUrl = "https://github.com/47deg/sbt-dependencies"
+lazy val commonSettings = artifactSettings ++ miscSettings
 
-lazy val publishSettings = Seq(
-  licenses += ("Apache License", url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-  scmInfo := Some(ScmInfo(url(gitUrl), s"scm:git:$gitUrl.git")),
-  apiURL := Some(url(gitUrl)),
-  publishMavenStyle := true,
-  publishArtifact in Test := false,
-  pomIncludeRepository := Function.const(false),
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("Snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("Releases" at nexus + "service/local/staging/deploy/maven2")
-  },
-  pomExtra := <developers>
-    <developer>
-      <name>47 Degrees (twitter: @47deg)</name>
-      <email>hello@47deg.com</email>
-    </developer>
-    <developer>
-      <name>47 Degrees</name>
-    </developer>
-  </developers>
-)
-
-lazy val gpgFolder = sys.env.getOrElse("GPG_FOLDER", ".")
-
-lazy val pgpSettings = Seq(
-  pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray),
-  pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
-  pgpSecretRing := file(s"$gpgFolder/secring.gpg")
-)
-
-lazy val credentialSettings = Seq(
-  credentials ++= (for {
-    username <- Option(System.getenv().get("SONATYPE_USERNAME"))
-    password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
-  } yield
-    Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
-)
+lazy val allSettings = pluginSettings ++
+    commonSettings ++
+    sharedReleaseProcess ++
+    credentialSettings ++
+    sharedPublishSettings(gh, dev)
 
 lazy val `sbt-dependencies` = (project in file("."))
   .settings(moduleName := "sbt-dependencies")
-  .settings(artifactSettings: _*)
-  .settings(pluginSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(pgpSettings: _*)
-  .settings(credentialSettings: _*)
+  .settings(allSettings: _*)
   .settings(addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.0"))
