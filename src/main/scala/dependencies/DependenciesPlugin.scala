@@ -49,14 +49,14 @@ object DependenciesPlugin extends AutoPlugin {
     showDependencyUpdates := {
       readUpdates(dependencyUpdatesData.value, streams.value.log) {
         list =>
-          val fullTable = Seq("Module", "Revision", "Patch", "Minor", "Major") +:
+          val fullTable = List("Module", "Revision", "Patch", "Minor", "Major") +:
               list.map(
                 dep =>
-                  Seq(dep.moduleName,
-                      dep.revision,
-                      dep.patch.getOrElse(""),
-                      dep.minor.getOrElse(""),
-                      dep.major.getOrElse("")))
+                  List(dep.moduleName,
+                       dep.revision,
+                       dep.patch.getOrElse(""),
+                       dep.minor.getOrElse(""),
+                       dep.major.getOrElse("")))
           streams.value.log.info("\nFound some dependency updates:\n")
           streams.value.log.info(TablePrinter.format(fullTable))
           streams.value.log.info("Execute `updateDependencyIssues` to update your issues\n")
@@ -76,14 +76,22 @@ object DependenciesPlugin extends AutoPlugin {
                               createIssueForDep(dep, issues, githubClient, streams.value.log)))
               } yield createdIssues
               result onComplete {
-                case Success(createdIssues) => streams.value.log.info("GitHub issues created or updated\n")
+                case Success(createdIssues) =>
+                  streams.value.log.info("GitHub issues created or updated\n")
                 case Failure(e) =>
                   streams.value.log.error(s"Error creating issues")
                   e.printStackTrace()
               }
             case None =>
               streams.value.log.info(
-                "Can't read the access token, please set the GitHub token with the property 'githubToken' (for ex. `sbt -DgithubToken=XXXXXX`)\n")
+                """
+                  | Can't read the access token, please set the GitHub token with the property 'githubToken'
+                  | (for ex. `sbt -DgithubToken=XXXXXX`)
+                  |
+                  | You can create a new token in this page:
+                  |  * https://github.com/settings/tokens
+                  |
+                  | """.stripMargin)
           }
 
       }

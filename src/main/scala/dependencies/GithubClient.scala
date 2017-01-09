@@ -49,9 +49,9 @@ class GithubClient(owner: String, repo: String, accessToken: String)(implicit ec
       .createIssue(owner = owner,
                    repo = repo,
                    title = title(dependencyUpdate),
-                   body = Some(body(dependencyUpdate)),
-                   labels = Some(List(issueLabel)),
-                   assignees = Some(List.empty))
+                   body = body(dependencyUpdate),
+                   labels = List(issueLabel),
+                   assignees = List.empty)
       .execFuture[HttpResponse[String]](Map("user-agent" -> "sbt-dependencies")) map {
       case Right(response) => response.result
       case Left(e)         => throw e

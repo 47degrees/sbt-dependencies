@@ -22,8 +22,7 @@ lazy val pluginSettings = Seq(
       "jgit-repo" at "http://download.eclipse.org/jgit/maven"
     ),
     libraryDependencies ++= Seq(
-      "org.scalactic"     %% "scalactic"  % "3.0.0",
-      "com.fortysevendeg" %% "github4s"   % "0.9.1-SNAPSHOT",
+      "com.fortysevendeg" %% "github4s"   % "0.10.0",
       "org.scalatest"     %% "scalatest"  % versions("scalatest") % "test",
       "org.scalacheck"    %% "scalacheck" % versions("scalacheck") % "test"
     ),

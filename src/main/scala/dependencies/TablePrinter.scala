@@ -2,8 +2,8 @@ package dependencies
 
 object TablePrinter {
 
-  def format(table: Seq[Seq[String]]) = table match {
-    case Seq() => ""
+  def format(table: List[List[String]]) = table match {
+    case Nil => ""
     case _ =>
       val sizes = table map {
         _.map { cell =>
@@ -17,15 +17,15 @@ object TablePrinter {
       formatRows(rowSeparator(colSizes), rows)
   }
 
-  def formatRows(rowSeparator: String, rows: Seq[String]): String =
+  def formatRows(rowSeparator: String, rows: List[String]): String =
     (rowSeparator ::
       rows.head ::
         rowSeparator ::
-          rows.tail.toList :::
+          rows.tail :::
             rowSeparator ::
               List()).mkString("\n")
 
-  def formatRow(row: Seq[String], colSizes: Seq[Int], header: Boolean) = {
+  def formatRow(row: List[String], colSizes: List[Int], header: Boolean) = {
     val cells = row.zip(colSizes) map {
       case (item, size) if size == 0 => ""
       case (item, size)              => ("%" + size + "s").format(item)
@@ -33,6 +33,6 @@ object TablePrinter {
     cells.mkString("|", "|", "|")
   }
 
-  def rowSeparator(colSizes: Seq[Int]) = colSizes map { "-" * _ } mkString ("+", "+", "+")
+  def rowSeparator(colSizes: List[Int]) = colSizes map { "-" * _ } mkString ("+", "+", "+")
 
 }
