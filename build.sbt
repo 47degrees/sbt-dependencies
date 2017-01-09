@@ -18,12 +18,13 @@ lazy val pluginSettings = Seq(
     scalaVersion in ThisBuild := "2.10.6",
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
+      Resolver.sonatypeRepo("snapshots"),
       "jgit-repo" at "http://download.eclipse.org/jgit/maven"
     ),
     libraryDependencies ++= Seq(
-      "org.scalactic"  %% "scalactic"  % "3.0.0",
-      "org.scalatest"  %% "scalatest"  % versions("scalatest") % "test",
-      "org.scalacheck" %% "scalacheck" % versions("scalacheck") % "test"
+      "com.fortysevendeg" %% "github4s"   % "0.10.0",
+      "org.scalatest"     %% "scalatest"  % versions("scalatest") % "test",
+      "org.scalacheck"    %% "scalacheck" % versions("scalacheck") % "test"
     ),
     scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
   ) ++ reformatOnCompileSettings
