@@ -18,9 +18,9 @@ addSbtPlugin("com.fortysevendeg" % "sbt-dependencies" % "0.0.1")
 
 **SBT Configuration**
 
-`githubOwner`: The GitHub owner (user or organization) of the current project
-`githubRepo`: The GitHub repo name
-`githubToken`: A GitHub token to search and edit issues. You can create a new token in your [GitHub settings](https://github.com/settings/tokens) and pass it to SBT with a system property.
+* `githubOwner`: The GitHub owner (user or organization) of the current project
+* `githubRepo`: The GitHub repo name
+* `githubToken`: A GitHub token to search and edit issues. You can create a new token in your [GitHub settings](https://github.com/settings/tokens) and pass it to SBT with a system property.
 
 For example (SBT configuration):
 
@@ -38,9 +38,8 @@ $ sbt -DgithubToken=XXXXXX
 
 ## SBT Tasks
 
-`showDependencyUpdates`: Shows the dependency updates
-
-`updateDependencyIssues`: Iterates over each dependency update and creates a new GitHub Issue for that dependency. If there is already an open issue for that dependency just updates it. The body of the issue contains the `patch`, `minor` and `major` versions available for that library.
+* `showDependencyUpdates`: Shows the dependency updates
+* `updateDependencyIssues`: Iterates over each dependency update and creates a new GitHub Issue for that dependency. If there is already an open issue for that dependency just updates it. The body of the issue contains the `patch`, `minor` and `major` versions available for that library.
 
 ## Travis configuration
 
