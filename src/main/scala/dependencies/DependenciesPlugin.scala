@@ -66,8 +66,8 @@ object DependenciesPlugin extends AutoPlugin {
       readUpdates(dependencyUpdatesData.value, streams.value.log) {
         list =>
           streams.value.log.info("Reading GitHub issues\n")
-          sys.props.get("githubToken") match {
-            case Some(accessToken) =>
+          githubToken.value match {
+            case accessToken if accessToken.nonEmpty =>
               val githubClient = GithubClient(githubOwner.value, githubRepo.value, accessToken)
               val result = for {
                 issues <- githubClient.findIssuesByModuleName()
@@ -82,7 +82,7 @@ object DependenciesPlugin extends AutoPlugin {
                   streams.value.log.error(s"Error creating issues")
                   e.printStackTrace()
               }
-            case None =>
+            case _ =>
               streams.value.log.info(
                 """
                   | Can't read the access token, please set the GitHub token with the property 'githubToken'
@@ -96,7 +96,8 @@ object DependenciesPlugin extends AutoPlugin {
 
       }
     },
-    dependencyUpdatesExclusions := moduleFilter(organization = "org.scala-lang")
+    dependencyUpdatesExclusions := moduleFilter(organization = "org.scala-lang"),
+    githubToken := ""
   )
 
   override val projectSettings = defaultSettings
