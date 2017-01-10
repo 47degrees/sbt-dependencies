@@ -16,9 +16,9 @@ lazy val artifactSettings = Seq(
   )
 )
 
-pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray)
-pgpPublicRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/pubring.gpg")
-pgpSecretRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/secring.gpg")
+pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray)
+pgpPublicRing := file(s"${sys.env.getOrElse("PGP_FOLDER", ".")}/pubring.gpg")
+pgpSecretRing := file(s"${sys.env.getOrElse("PGP_FOLDER", ".")}/secring.gpg")
 
 lazy val pluginSettings = Seq(
     sbtPlugin := true,
