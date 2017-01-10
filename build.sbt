@@ -6,12 +6,19 @@ val gh   = GitHubSettings("com.fortysevendeg", "sbt-dependencies", "47 Degrees",
 val vAll = Versions(versions, libraries, scalacPlugins)
 
 lazy val artifactSettings = Seq(
-  name := "sbt-dependencies",
-  organization := "com.fortysevendeg",
-  organizationName := "47 Degrees",
+  name := gh.proj,
+  organization := gh.org,
+  organizationName := gh.publishOrg,
   homepage := Option(url("http://www.47deg.com")),
-  organizationHomepage := Some(new URL("http://47deg.com"))
+  organizationHomepage := Some(new URL("http://47deg.com")),
+  headers := Map(
+    "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
+  )
 )
+
+pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray)
+pgpPublicRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/pubring.gpg")
+pgpSecretRing := file(s"${sys.env.getOrElse("GPG_FOLDER", ".")}/secring.gpg")
 
 lazy val pluginSettings = Seq(
     sbtPlugin := true,
@@ -29,8 +36,15 @@ lazy val pluginSettings = Seq(
     scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
   ) ++ reformatOnCompileSettings
 
-lazy val `sbt-dependency-updates` = (project in file("."))
+lazy val commonSettings = artifactSettings ++ miscSettings
+
+lazy val allSettings = pluginSettings ++
+    commonSettings ++
+    sharedReleaseProcess ++
+    credentialSettings ++
+    sharedPublishSettings(gh, dev)
+
+lazy val `sbt-dependencies` = (project in file("."))
   .settings(moduleName := "sbt-dependencies")
-  .settings(artifactSettings: _*)
-  .settings(pluginSettings: _*)
+  .settings(allSettings: _*)
   .settings(addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.0"))
