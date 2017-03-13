@@ -1,9 +1,9 @@
 import de.heikoseeberger.sbtheader.license.Apache2_0
-import catext.Dependencies._
+import sbtorgpolicies._
+import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 
-val dev  = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
-val gh   = GitHubSettings("com.fortysevendeg", "sbt-dependencies", "47 Degrees", apache)
-val vAll = Versions(versions, libraries, scalacPlugins)
+val dev = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
+val gh  = GitHubSettings("com.47deg", "sbt-dependencies", "47 Degrees", apache)
 
 lazy val artifactSettings = Seq(
   name := gh.proj,
@@ -29,9 +29,9 @@ lazy val pluginSettings = Seq(
       "jgit-repo" at "http://download.eclipse.org/jgit/maven"
     ),
     libraryDependencies ++= Seq(
-      "com.fortysevendeg" %% "github4s"   % "0.10.0",
-      "org.scalatest"     %% "scalatest"  % versions("scalatest") % "test",
-      "org.scalacheck"    %% "scalacheck" % versions("scalacheck") % "test"
+      dep("github4s"),
+      dep("scalatest")  % "test",
+      dep("scalacheck") % "test"
     ),
     scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
   ) ++ reformatOnCompileSettings
@@ -40,8 +40,6 @@ lazy val commonSettings = artifactSettings ++ miscSettings
 
 lazy val allSettings = pluginSettings ++
     commonSettings ++
-    sharedReleaseProcess ++
-    credentialSettings ++
     sharedPublishSettings(gh, dev)
 
 lazy val `sbt-dependencies` = (project in file("."))

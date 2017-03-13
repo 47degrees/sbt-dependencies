@@ -18,7 +18,7 @@ object DependenciesPlugin extends AutoPlugin {
   import DependenciesPlugin.autoImport._
 
   def readUpdates(data: Map[ModuleID, SortedSet[Version]], log: Logger)(
-      f: (List[DependencyUpdate]) => Unit) =
+      f: (List[DependencyUpdate]) => Unit): Unit =
     Updates.readUpdates(data) match {
       case Nil  => log.info("\nNo dependency updates found\n")
       case list => f(list)
@@ -85,11 +85,18 @@ object DependenciesPlugin extends AutoPlugin {
             case _ =>
               streams.value.log.info(
                 """
-                  | Can't read the access token, please set the GitHub token with the property 'githubToken'
-                  | (for ex. `sbt -DgithubToken=XXXXXX`)
+                  | Can't read the access token, please set the GitHub token with the SBT setting key 'githubToken'
                   |
-                  | You can create a new token in this page:
-                  |  * https://github.com/settings/tokens
+                  | For ex:
+                  |
+                  |  // build.sbt
+                  |  githubToken := sys.props.get("githubToken").getOrElse("")
+                  |
+                  |  // Command line
+                  |  `sbt -DgithubToken=XXXXXX`)
+                  |
+                  | You need to create a token in this page with the `repo` scope:
+                  |  * https://github.com/settings/tokens/new?scopes=repo&description=sbt-dependencies
                   |
                   | """.stripMargin)
           }
@@ -100,6 +107,6 @@ object DependenciesPlugin extends AutoPlugin {
     githubToken := ""
   )
 
-  override val projectSettings = defaultSettings
+  override val projectSettings: Seq[Setting[_]] = defaultSettings
 
 }
