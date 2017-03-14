@@ -2,7 +2,7 @@ package dependencies
 
 object TablePrinter {
 
-  def format(table: List[List[String]]) = table match {
+  def format(table: List[List[String]]): String = table match {
     case Nil => ""
     case _ =>
       val sizes = table map {
@@ -25,7 +25,7 @@ object TablePrinter {
             rowSeparator ::
               List()).mkString("\n")
 
-  def formatRow(row: List[String], colSizes: List[Int], header: Boolean) = {
+  def formatRow(row: List[String], colSizes: List[Int], header: Boolean): String = {
     val cells = row.zip(colSizes) map {
       case (item, size) if size == 0 => ""
       case (item, size)              => ("%" + size + "s").format(item)
@@ -33,6 +33,6 @@ object TablePrinter {
     cells.mkString("|", "|", "|")
   }
 
-  def rowSeparator(colSizes: List[Int]) = colSizes map { "-" * _ } mkString ("+", "+", "+")
+  def rowSeparator(colSizes: List[Int]): String = colSizes map { "-" * _ } mkString ("+", "+", "+")
 
 }

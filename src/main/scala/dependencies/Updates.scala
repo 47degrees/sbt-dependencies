@@ -7,20 +7,20 @@ import scala.collection.immutable.SortedSet
 
 object Updates {
 
-  def formatModule(module: ModuleID) =
+  def formatModule(module: ModuleID): String =
     module.organization + ":" + module.name + module.configurations.map(":" + _).getOrElse("")
 
-  def patchUpdate(c: Version, updates: SortedSet[Version]) =
+  def patchUpdate(c: Version, updates: SortedSet[Version]): Option[Version] =
     updates.filter { v =>
       v.major == c.major && v.minor == c.minor
     }.lastOption
 
-  def minorUpdate(c: Version, updates: SortedSet[Version]) =
+  def minorUpdate(c: Version, updates: SortedSet[Version]): Option[Version] =
     updates.filter { v =>
       v.major == c.major && v.minor > c.minor
     }.lastOption
 
-  def majorUpdate(c: Version, updates: SortedSet[Version]) =
+  def majorUpdate(c: Version, updates: SortedSet[Version]): Option[Version] =
     updates.filter { v =>
       v.major > c.major
     }.lastOption
