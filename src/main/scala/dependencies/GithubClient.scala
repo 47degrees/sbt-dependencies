@@ -1,33 +1,47 @@
 package dependencies
 
-import cats.MonadError
-import cats.instances.future
+import cats.free.Free._
+import cats.implicits._
 import github4s.Github
-import github4s.Github._
-import github4s.jvm.Implicits._
+import github4s.GithubResponses.GHResult
 import github4s.free.domain._
 
-import scala.concurrent.{ExecutionContext, Future}
-import scalaj.http.HttpResponse
-
-class GithubClient(owner: String, repo: String, accessToken: String)(implicit ec: ExecutionContext) {
+class GithubClient(owner: String, repo: String, accessToken: String) {
 
   val issueTitle = "Update dependency"
   val issueLabel = "update-dependencies"
 
-  implicit val monadError: MonadError[Future, Throwable] = catsStdInstancesForFuture
+  private[this] val gh = Github(Some(accessToken))
 
-  def findIssuesByModuleName(): Future[Map[String, Issue]] = {
+  def createIssues(list: List[DependencyUpdate]): GithubOpsLog[List[Issue]] = {
+
+    def createIssueForDep(dep: DependencyUpdate, issues: Map[String, Issue]): GithubOpsLog[Issue] = {
+      for {
+        _ <- logW(s"Preparing issue for module `${dep.moduleName}`")
+        maybeIssue = issues.get(dep.moduleName)
+        issue <- maybeIssue.fold({
+          logW("Existing issue not found, creating a new one") *> createIssue(dep)
+        })({ (issue: Issue) =>
+          logW(s"Found existing open issue (#${issue.number}), updating it") *> updateIssue(issue,
+                                                                                            dep)
+        })
+      } yield issue
+    }
+
+    for {
+      issues        <- findIssuesByModuleName()
+      createdIssues <- list.traverse(createIssueForDep(_, issues))
+    } yield createdIssues
+  }
+
+  def findIssuesByModuleName(): GithubOpsLog[Map[String, Issue]] = {
 
     def readIssues(issues: List[Issue]): Map[String, Issue] =
-      issues.flatMap { issue =>
-        if (issue.title.startsWith(issueTitle) && issue.title.length > issueTitle.length + 1) {
-          val moduleName = issue.title.substring(issueTitle.length + 1)
-          Option(moduleName -> issue)
-        } else {
-          None
-        }
-      }.toMap
+      (for {
+        issue <- issues
+        if issue.title.startsWith(issueTitle) && issue.title.length > issueTitle.length + 1
+        moduleName = issue.title.substring(issueTitle.length + 1)
+      } yield moduleName -> issue).toMap
 
     val searchParams = List(OwnerParamInRepository(s"$owner/$repo"),
                             IssueTypeIssue,
@@ -35,43 +49,36 @@ class GithubClient(owner: String, repo: String, accessToken: String)(implicit ec
                             SearchIn(Set(SearchInTitle)),
                             LabelParam(issueLabel))
 
-    Github(Some(accessToken)).issues
-      .searchIssues(issueTitle, searchParams)
-      .execFuture[HttpResponse[String]](Map("user-agent" -> "sbt-dependencies")) map {
-      case Right(response) =>
-        readIssues(response.result.items)
-      case Left(e) => throw e
-    }
+    liftLog(liftResponse(gh.issues.searchIssues(issueTitle, searchParams)).map { response =>
+      val map = readIssues(response.result.items)
+      GHResult(map, response.statusCode, response.headers)
+    })
   }
 
-  def createIssue(dependencyUpdate: DependencyUpdate): Future[Issue] =
-    Github(Some(accessToken)).issues
-      .createIssue(owner = owner,
-                   repo = repo,
-                   title = title(dependencyUpdate),
-                   body = body(dependencyUpdate),
-                   labels = List(issueLabel),
-                   assignees = List.empty)
-      .execFuture[HttpResponse[String]](Map("user-agent" -> "sbt-dependencies")) map {
-      case Right(response) => response.result
-      case Left(e)         => throw e
-    }
+  def createIssue(dependencyUpdate: DependencyUpdate): GithubOpsLog[Issue] =
+    liftLog(
+      liftResponse(
+        gh.issues.createIssue(owner = owner,
+                              repo = repo,
+                              title = title(dependencyUpdate),
+                              body = body(dependencyUpdate),
+                              labels = List(issueLabel),
+                              assignees = List.empty)))
 
-  def updateIssue(issue: Issue, dependencyUpdate: DependencyUpdate): Future[Issue] =
-    Github(Some(accessToken)).issues
-      .editIssue(owner = owner,
-                 repo = repo,
-                 issue = issue.number,
-                 state = "open",
-                 title = title(dependencyUpdate),
-                 body = body(dependencyUpdate),
-                 milestone = None,
-                 labels = List(issueLabel),
-                 assignees = issue.assignee.toList.map(_.login))
-      .execFuture[HttpResponse[String]](Map("user-agent" -> "sbt-dependencies")) map {
-      case Right(response) => response.result
-      case Left(e)         => throw e
-    }
+  def updateIssue(issue: Issue, dependencyUpdate: DependencyUpdate): GithubOpsLog[Issue] =
+    liftLog(
+      liftResponse(
+        gh.issues.editIssue(
+          owner = owner,
+          repo = repo,
+          issue = issue.number,
+          state = "open",
+          title = title(dependencyUpdate),
+          body = body(dependencyUpdate),
+          milestone = None,
+          labels = List(issueLabel),
+          assignees = issue.assignee.toList.map(_.login)
+        )))
 
   def title(dependencyUpdate: DependencyUpdate): String =
     s"$issueTitle ${dependencyUpdate.moduleName}"
@@ -88,8 +95,7 @@ class GithubClient(owner: String, repo: String, accessToken: String)(implicit ec
 
 object GithubClient {
 
-  def apply(owner: String, repo: String, accessToken: String)(
-      implicit ec: ExecutionContext): GithubClient =
+  def apply(owner: String, repo: String, accessToken: String): GithubClient =
     new GithubClient(owner, repo, accessToken)
 
 }

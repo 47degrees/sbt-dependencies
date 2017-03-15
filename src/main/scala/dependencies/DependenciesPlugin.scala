@@ -2,14 +2,16 @@ package dependencies
 
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import com.timushev.sbt.updates.versions.Version
-import github4s.free.domain.Issue
+import github4s.Github._
+import github4s.jvm.Implicits._
 import sbt.Keys._
 import sbt._
 
 import scala.collection.immutable.SortedSet
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
+import scalaj.http.HttpResponse
+import cats.implicits._
+import github4s.GithubResponses.GHResult
 
 object DependenciesPlugin extends AutoPlugin {
 
@@ -23,27 +25,6 @@ object DependenciesPlugin extends AutoPlugin {
       case Nil  => log.info("\nNo dependency updates found\n")
       case list => f(list)
     }
-
-  def createIssueForDep(dep: DependencyUpdate,
-                        issues: Map[String, Issue],
-                        githubClient: GithubClient,
-                        log: Logger): Future[Issue] = {
-    log.info(s"Preparing issue for module `${dep.moduleName}`\n")
-    issues.get(dep.moduleName) match {
-      case Some(issue) =>
-        log.info(s"Found existing open issue (#${issue.number}), updating it\n")
-        githubClient.updateIssue(issue, dep) map { issue =>
-          log.info(s"Issue updated at: ${issue.html_url}")
-          issue
-        }
-      case None =>
-        log.info("Existing issue not found, creating a new one\n")
-        githubClient.createIssue(dep) map { issue =>
-          log.info(s"Issue created at: ${issue.html_url}")
-          issue
-        }
-    }
-  }
 
   lazy val defaultSettings = Seq(
     showDependencyUpdates := {
@@ -68,20 +49,25 @@ object DependenciesPlugin extends AutoPlugin {
           streams.value.log.info("Reading GitHub issues\n")
           githubToken.value match {
             case accessToken if accessToken.nonEmpty =>
-              val githubClient = GithubClient(githubOwner.value, githubRepo.value, accessToken)
-              val result = for {
-                issues <- githubClient.findIssuesByModuleName()
-                createdIssues <- Future.sequence(
-                  list map (dep =>
-                              createIssueForDep(dep, issues, githubClient, streams.value.log)))
-              } yield createdIssues
-              result onComplete {
-                case Success(createdIssues) =>
+              val client = GithubClient(githubOwner.value, githubRepo.value, accessToken)
+              val result = client
+                .createIssues(list)
+                .run
+                .value
+                .exec[Try, HttpResponse[String]](Map("user-agent" -> "sbt-dependencies"))
+
+              result match {
+                case Success(Right(GHResult((logEntries: Log, _), _, _))) =>
+                  logEntries.foreach(streams.value.log.info(_))
                   streams.value.log.info("GitHub issues created or updated\n")
+                case Success(Left(e)) =>
+                  streams.value.log.error(s"Error creating issues")
+                  e.printStackTrace()
                 case Failure(e) =>
                   streams.value.log.error(s"Error creating issues")
                   e.printStackTrace()
               }
+
             case _ =>
               streams.value.log.info(
                 """
@@ -93,7 +79,7 @@ object DependenciesPlugin extends AutoPlugin {
                   |  githubToken := sys.props.get("githubToken").getOrElse("")
                   |
                   |  // Command line
-                  |  `sbt -DgithubToken=XXXXXX`)
+                  |  `sbt -DgithubToken=XXXXXX`
                   |
                   | You need to create a token in this page with the `repo` scope:
                   |  * https://github.com/settings/tokens/new?scopes=repo&description=sbt-dependencies
