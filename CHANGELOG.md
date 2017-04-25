@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/25/2017 - Version 0.1.2
+
+Release changes:
+
+* Fixes publish microsites command ([#28](https://github.com/47deg/sbt-dependencies/pull/28))
+* Upgrades sbt-org-policies ([#29](https://github.com/47deg/sbt-dependencies/pull/29))
+
+
 ## 04/20/2017 - Version 0.1.1
 
 Release changes:
