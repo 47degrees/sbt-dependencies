@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/18/2017 - Version 0.3.0
+
+Release changes:
+
+* Release 0.3.0 ([#34](https://github.com/47deg/sbt-dependencies/pull/34))
+
+
 ## 09/13/2017 - Version 0.2.0
 
 Release changes:
