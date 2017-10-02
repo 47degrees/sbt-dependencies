@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/02/2017 - Version 0.3.2
+
+Release changes:
+
+* Upgrade github4s sbt org policies ([#36](https://github.com/47deg/sbt-dependencies/pull/36))
+
+
 ## 09/19/2017 - Version 0.3.1
 
 Release changes:
