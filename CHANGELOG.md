@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/02/2017 - Version 0.3.4
+
+Release changes:
+
+* Enables microsite plugin again ([#38](https://github.com/47deg/sbt-dependencies/pull/38))
+
+
 ## 10/02/2017 - Version 0.3.3
 
 Release changes:
