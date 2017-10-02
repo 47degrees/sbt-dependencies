@@ -1,0 +1,11 @@
+name: sbt-dependencies
+baseurl: /sbt-dependencies
+description: An SBT plugin that allows to you to keep your project dependencies up-to-date
+highlighter: rouge
+docs: true
+collections:
+  tut:
+    output: true
+version: 0.3.2
+org: 47 Degrees
+markdown: kramdown
