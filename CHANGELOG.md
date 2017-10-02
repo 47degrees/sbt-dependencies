@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/02/2017 - Version 0.3.3
+
+Release changes:
+
+* Makes site publication through Github4s ([#37](https://github.com/47deg/sbt-dependencies/pull/37))
+
+
 ## 10/02/2017 - Version 0.3.2
 
 Release changes:
