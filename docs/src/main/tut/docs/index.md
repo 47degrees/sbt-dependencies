@@ -13,7 +13,7 @@ Add the following line to `project/plugins.sbt`:
 
 [comment]: # (Start Replace)
 ```scala
-addSbtPlugin("com.47deg" % "sbt-dependencies" % "0.3.4")
+addSbtPlugin("com.47deg" % "sbt-dependencies" % "0.3.5")
 ```
 
 [comment]: # (End Replace)

@@ -4,7 +4,7 @@
 
 The maintainers of the project are:
 
-* Fede Fernández <[fedefernandez](https://github.com/fedefernandez)>
+* 47 Degrees (twitter: @47deg) <[47degdev](https://github.com/47degdev)>
 
 ## Contributors
 
