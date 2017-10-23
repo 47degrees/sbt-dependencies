@@ -1,5 +1,16 @@
 # Changelog
 
+## 10/23/2017 - Version 0.3.5
+
+Release changes:
+
+* Bumps sbt-org-policies version ([#40](https://github.com/47deg/sbt-dependencies/pull/40))
+* Adds the org policies default settings to the projectSettings ([#39](https://github.com/47deg/sbt-dependencies/pull/39))
+* Bumps sbt-org-policies plugin ([#41](https://github.com/47deg/sbt-dependencies/pull/41))
+* Set crossScalaVersion to 2.12 and force org-policies-core version ([#42](https://github.com/47deg/sbt-dependencies/pull/42))
+* Fixes GitHub token ([#43](https://github.com/47deg/sbt-dependencies/pull/43))
+
+
 ## 10/02/2017 - Version 0.3.4
 
 Release changes:
