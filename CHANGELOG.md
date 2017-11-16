@@ -1,5 +1,13 @@
 # Changelog
 
+## 11/16/2017 - Version 0.3.8
+
+Release changes:
+
+* Fixes sbt-org-policies-core version ([#47](https://github.com/47deg/sbt-dependencies/pull/47))
+* Removes scala 2.10 from cross scala versions ([#49](https://github.com/47deg/sbt-dependencies/pull/49))
+
+
 ## 11/16/2017 - Version 0.3.7
 
 Release changes:
