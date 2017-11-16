@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/16/2017 - Version 0.3.7
+
+Release changes:
+
+* Fixes sbt-org-policies-core version ([#46](https://github.com/47deg/sbt-dependencies/pull/46))
+
+
 ## 11/15/2017 - Version 0.3.6
 
 Release changes:
