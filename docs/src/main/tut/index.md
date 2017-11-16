@@ -14,7 +14,7 @@ technologies:
 
 [comment]: # (Start Replace)
 ```scala
-addSbtPlugin("com.47deg" % "sbt-dependencies" % "0.3.8")
+addSbtPlugin("com.47deg" % "sbt-dependencies" % "0.3.9")
 ```
 
 [comment]: # (End Replace)
