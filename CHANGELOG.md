@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/16/2017 - Version 0.3.9
+
+Release changes:
+
+* Bumps sbt-org-policies ([#50](https://github.com/47deg/sbt-dependencies/pull/50))
+
+
 ## 11/16/2017 - Version 0.3.8
 
 Release changes:
