@@ -1,5 +1,12 @@
 # Changelog
 
+## 12/14/2018 - Version 0.4.0
+
+Release changes:
+
+* Removes support for SBT 0.13.x ([#51](https://github.com/47deg/sbt-dependencies/pull/51))
+
+
 ## 11/16/2017 - Version 0.3.9
 
 Release changes:
